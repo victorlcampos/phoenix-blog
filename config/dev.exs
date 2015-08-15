@@ -32,4 +32,4 @@ config :blog_phoenix, BlogPhoenix.Repo,
   username: "postgres",
   password: "postgres",
   database: "blog_phoenix_dev",
-  size: 10 # The amount of database connections in the pool
+  pool_size: 10 # The amount of database connections in the pool
