@@ -9,20 +9,23 @@ defmodule BlogPhoenix.PostController do
 
   def add_comment(conn, %{"comment" => comment_params, "post_id" => post_id}) do
     changeset = Comment.changeset(%Comment{}, Map.put(comment_params, "post_id", post_id))
-    post = Post |> Repo.get(post_id) |> Repo.preload([:comments])
 
     case Repo.insert(changeset) do
       {:ok, _post} ->
         conn
         |> put_flash(:info, "Comment added.")
-        |> redirect(to: post_path(conn, :show, post))
+        |> redirect(to: post_path(conn, :show, post_id))
       {:error, changeset} ->
+        post = Post |> Repo.get(post_id) |> Repo.preload([:comments])
         render(conn, "show.html", post: post, changeset: changeset)
     end
   end
 
   def index(conn, _params) do
-    posts = Repo.all(Post)
+    posts = Post
+    |> Post.count_comments
+    |> Repo.all
+
     render(conn, "index.html", posts: posts)
   end
 
